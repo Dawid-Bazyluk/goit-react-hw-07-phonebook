@@ -10,30 +10,30 @@ const ContactList = ({ storage }) => {
   const filterValue = useSelector(selectFilter);
   const dispatch = useDispatch();
 
-  const filterStatus = filterValue.status;
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filterStatus.toLowerCase()),
+  const filterContact = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filterValue.status.toLowerCase()),
   );
 
   const handleDelete = (id) => {
-    dispatch(deleteContact(id)).then(() => {
-      localStorage.setItem(storage, JSON.stringify(contacts));
-    });
+    dispatch(deleteContact(id));
+    const updatedContacts = contacts.filter((contact) => contact.id !== id);
+    localStorage.setItem(storage, JSON.stringify(updatedContacts));
   };
 
-  const listItems =
-    filteredContacts.length === 0
-      ? ""
-      : filteredContacts.map((item) => {
-          return (
-            <li key={item.id} id={item.id} className={styles.item}>
-              {item.name}: {item.phone}
-              <button onClick={() => handleDelete(item.id)}>Delete</button>
-            </li>
-          );
-        });
-
-  return <ul className={styles.list}>{listItems}</ul>;
+  return (
+    <ul className={styles.list}>
+      {filterContact.map((contact) => (
+        <li key={contact.id} className={styles.item}>
+          {contact.name}: {contact.phone}
+          <button
+            className={styles.buttonItem}
+            onClick={() => handleDelete(contact.id)}>
+            Delete
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
 };
 
 export default ContactList;
