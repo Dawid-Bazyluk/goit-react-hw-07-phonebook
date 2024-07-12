@@ -1,39 +1,39 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getContacts, getFilter } from "../../redux/selectors";
-import { deleteContacts } from "../../redux/contactsSlicer";
+import { selectContacts, selectFilter } from "../../redux/selectors";
+import { deleteContact } from "../../redux/contactsSlicer";
 
 import styles from "./ContactList.module.scss";
 
-const ContactList = (storage) => {
-  const contacts = useSelector(getContacts);
-  const filterValue = useSelector(getFilter);
+const ContactList = ({ storage }) => {
+  const contacts = useSelector(selectContacts);
+  const filterValue = useSelector(selectFilter);
   const dispatch = useDispatch();
 
-  const filterContact = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filterValue.toLowerCase()),
+  const filterStatus = filterValue.status;
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filterStatus.toLowerCase()),
   );
 
   const handleDelete = (id) => {
-    dispatch(deleteContacts(id));
-    const updatedContacts = contacts.filter((contact) => contact.id !== id);
-    localStorage.setItem(storage, JSON.stringify(updatedContacts));
+    dispatch(deleteContact(id)).then(() => {
+      localStorage.setItem(storage, JSON.stringify(contacts));
+    });
   };
 
-  return (
-    <ul className={styles.list}>
-      {filterContact.map((contact) => (
-        <li key={contact.id} className={styles.item}>
-          {contact.name}: {contact.number}
-          <button
-            className={styles.buttonItem}
-            onClick={() => handleDelete(contact.id)}>
-            Delete
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
+  const listItems =
+    filteredContacts.length === 0
+      ? ""
+      : filteredContacts.map((item) => {
+          return (
+            <li key={item.id} id={item.id} className={styles.item}>
+              {item.name}: {item.phone}
+              <button onClick={() => handleDelete(item.id)}>Delete</button>
+            </li>
+          );
+        });
+
+  return <ul className={styles.list}>{listItems}</ul>;
 };
 
 export default ContactList;
