@@ -23,8 +23,8 @@ const App = () => {
       <ContactForm />
       <h2>Contacts</h2>
       <Filter />
-      {!!isLoading && !error && <b>Loading...</b>}
       <ContactList></ContactList>
+      {!!isLoading && !error && <b style={{ fontSize: 40 }}>Loading...</b>}
     </div>
   );
 };
